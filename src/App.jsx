@@ -23,7 +23,7 @@ function App() {
     e.preventDefault()
 
     if(!nombres.trim()&&apellidos.trim()&&edad.trim()&&posicion.trim()&&dorsal.trim()&&telefono.trim()&&correo.trim()){
-      console.log('Digite tarea')
+      console.log('Digite los datos')
       setError('Digite los datos')
       return
     }
