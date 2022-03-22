@@ -104,7 +104,7 @@ function App() {
       <hr />
       <div className="row">
         <div className="col-8">
-          <h4 className="text-center">PLANTILLA</h4>
+          <h4 className="text-center">PLANTILLA JUGADORES</h4>
           <ul className="list-group">
             {
               jugadores.map(item => (
