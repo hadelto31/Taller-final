@@ -11,7 +11,6 @@ function App() {
   const [dorsal, setDorsal]       = React.useState('')
   const [telefono, setTelefono]   = React.useState('')
   const [correo, setCorreo]       = React.useState('')
-
   
 
   const [jugadores, setJugadores] = React.useState([])
@@ -98,6 +97,8 @@ function App() {
       setModoEdicion(false)
   }
 
+
+
   return (
     <div className="container mt-5">
       <h1 className="text-center">SELECCION DE FUTBOL AVG</h1>
@@ -148,8 +149,12 @@ function App() {
               value = {apellidos}
             />
 
-            <input
-              type="number"
+            <input         
+              type="tel"
+              pattern='\d{2}'
+              maxlength="2"
+              min='1'
+              max='99'
               className='form-control mb-2'
               placeholder='Ingrese edad'
               onChange={e => setEdad(e.target.value)}
@@ -170,25 +175,28 @@ function App() {
               placeholder='Ingrese # Dorsal'
               onChange={e => setDorsal(e.target.value)}
               value = {dorsal}
-            />
+            />                  
+
 
             <input
-              type="number"
+              type="tel"
+              pattern='^[3]\d{9}$'
+              maxlength="10"
               className='form-control mb-2'
               placeholder='Ingrese # Telefonico'
               onChange={e => setTelefono(e.target.value)}
               value = {telefono}
             />
 
-            <input
-              type="mail"
+
+              <input
+              type="email"
+              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
               className='form-control mb-2'
-              placeholder='Ingrese correo'
+              placeholder='Ingrese correo'              
               onChange={e => setCorreo(e.target.value)}
               value = {correo}
             />
-
-            
 
             {
               modoEdicion ?
