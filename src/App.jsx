@@ -1,6 +1,6 @@
 import './App.css';
-import { nanoid } from 'nanoid';
 import React from 'react';
+import { firebase } from './firebase';
 
 function App() {
 
@@ -12,43 +12,101 @@ function App() {
   const [telefono, setTelefono]   = React.useState('')
   const [correo, setCorreo]       = React.useState('')
 
-  
-
   const [jugadores, setJugadores] = React.useState([])
   const [id, setId] = React.useState('')
   const [error, setError] = React.useState(null)
   const [modoEdicion, setModoEdicion] = React.useState(false)
 
-  const agregarJugador = e => {
-    e.preventDefault()
+  const obtenerDatos = async () => {
+   try{
+    const db = firebase.firestore()
+    const data = await db.collection('jugadores').get()
+    const arrayData = data.docs.map(doc => ({id: doc.id, ...doc.data()}))
+    setJugadores(arrayData)
+    console.log(arrayData)
+  }
+  
+  catch(error){
+    console.log(error)
+  }
+ }
 
-    if(!nombres.trim()&&apellidos.trim()&&edad.trim()&&posicion.trim()&&dorsal.trim()&&telefono.trim()&&correo.trim()){
-      console.log('Digite los datos')
-      setError('Digite los datos')
-      return
+ React.useEffect(()=>{
+    
+  obtenerDatos()
+
+ }, [])
+
+  const agregarJugador = async (e) => {
+   e.preventDefault()
+
+  
+   if(!nombres.trim()&&apellidos.trim()&&edad.trim()&&posicion.trim()&&dorsal.trim()&&telefono.trim()&&correo.trim()){
+     setError('Digite los datos')
+     return
     }
 
-    setJugadores([
-      ...jugadores,
-      {id: nanoid(), nombreJugador:nombres, apellidosJugador:apellidos, edadJugador:edad, posicionJugador:posicion, dorsalJugador:dorsal, telefonoJugador:telefono, correoJugador:correo}
-    ])
+   try{
+      const db = firebase.firestore()
+      const nuevoJugador = {
+          nombreJugador:nombres, 
+          apellidosJugador:apellidos, 
+          edadJugador:edad, 
+          posicionJugador:posicion,
+          dorsalJugador:dorsal, 
+          telefonoJugador:telefono, 
+          correoJugador:correo, 
+          
+        }
 
+        const data = await db.collection('jugadores').add(nuevoJugador)
+
+        setJugadores([
+        ...jugadores,
+        {id: data(), nombreJugador:nombres, apellidosJugador:apellidos, edadJugador:edad, posicionJugador:posicion, dorsalJugador:dorsal, telefonoJugador:telefono, correoJugador:correo}
+        ])
+
+        setNombres('')
+        setApellidos('')  
+        setEdad('')
+        setPosicion('')
+        setDorsal('')
+        setTelefono('')
+        setCorreo('')
+        setError(null)
+      
+    }  
+
+    catch(error){
+      console.log(error)
+    }
+ }
+
+ const eliminarJugador = async(id) => {
+  try{
+    const db = firebase.firestore()
+    await db.collection('jugadores').doc(id).delete()
+    const arrayFiltrado = jugadores.filter(item => item.id !== id)
+    setJugadores(arrayFiltrado)
+    setModoEdicion(false)
     setNombres('')
     setApellidos('')
     setEdad('')
+    setId('')
     setPosicion('')
     setDorsal('')
     setTelefono('')
     setCorreo('')
-    setError(null)
+    setError(null)  
   }
+    
+  catch(error){
+    console.log(error)  
+  } 
+  
+ }
 
-  const eliminarJugador = id => {
-    const arrayAux = jugadores.filter(item => item.id !== id)
-    setJugadores(arrayAux)
-  }
-
-  const editar = item =>{
+ const editar = item =>{
     setError(null)
     setModoEdicion(true)
     setNombres(item.nombreJugador)
@@ -59,6 +117,46 @@ function App() {
     setTelefono(item.telefonoJugador)
     setCorreo(item.correoJugador)
     setId(item.id)
+  }
+
+  const editarJugador = async(e) =>{
+    if(!nombres.trim()&&apellidos.trim()&&edad.trim()&&posicion.trim()&&dorsal.trim()&&telefono.trim()&&correo.trim()){
+      console.log('Digite los datos')
+      setError('Digite los datos')
+      return
+    }
+
+    try{
+     const db = firebase.firestore()
+     await db.collection('jugadores').doc(id).update({
+       nombreJugador:nombres, 
+       apellidosJugador:apellidos, 
+       edadJugador:edad, 
+       posicionJugador:posicion,
+       dorsalJugador:dorsal, 
+       telefonoJugador:telefono, 
+       correoJugador:correo,
+      })
+
+      const arrayEditado = jugadores.map(
+        item => item.id === id ? {id:id, nombreJugador:nombres, apellidosJugador:apellidos, edadJugador:edad, posicionJugador:posicion, dorsalJugador:dorsal, telefonoJugador:telefono, correoJugador:correo} : item
+      )
+      
+      setJugadores(arrayEditado)
+      setModoEdicion(false)
+      setNombres('')
+      setApellidos('')
+      setEdad('')
+      setId('')
+      setPosicion('')
+      setDorsal('')
+      setTelefono('')
+      setCorreo('')
+      setError(null)
+    }
+    catch(error){
+      console.log(error)
+    }
   }
 
   const cancelar = () =>{
@@ -74,29 +172,9 @@ function App() {
     setError(null)
   }
 
-  const editarJugador = e =>{
-    e.preventDefault()
-    if(!nombres.trim()&&apellidos.trim()&&edad.trim()&&posicion.trim()&&dorsal.trim()&&telefono.trim()&&correo.trim()){
-      setError('Digite los datos')
-      return
-    }
+  
 
-    const arrayEditado = jugadores.map(
-      item => item.id=== id ? {id:id, nombreJugador:nombres, apellidosJugador:apellidos, edadJugador:edad, posicionJugador:posicion, dorsalJugador:dorsal, telefonoJugador:telefono, correoJugador:correo } : item
-      )
-
-      setJugadores(arrayEditado)
-      setNombres('')
-      setApellidos('')
-      setEdad('')
-      setPosicion('')
-      setDorsal('')
-      setTelefono('')
-      setCorreo('')
-      setId('')
-      setError(null)
-      setModoEdicion(false)
-  }
+  
 
   return (
     <div className="container mt-5">
