@@ -1,0 +1,13 @@
+
+
+Deploy amplify
+https://main.d2wrxqo855db6l.amplifyapp.com
+
+netlify
+https://inspiring-starlight-cfb303.netlify.app/
+
+dominio
+https://www.harolddeltoroav.online
+
+Repositorio
+https://github.com/hadelto31/Taller-final.git
